@@ -1,0 +1,62 @@
+apply plugin: "${rootProject.ext.LibraryPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidExtPlugin}"
+
+android {
+    compileSdk rootProject.ext.ApplicationCompileV
+
+    defaultConfig {
+        namespace 'io.vanite.android.data'
+        minSdk rootProject.ext.MinSdkV
+        targetSdk rootProject.ext.ApplicationCompileV
+        versionCode rootProject.ext.LibraryVersionCode
+        versionName "${rootProject.ext.LibraryVersion}"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            debuggable false
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_10
+        targetCompatibility JavaVersion.VERSION_1_10
+    }
+
+    kotlinOptions {
+        jvmTarget = '10'
+    }
+}
+
+ext {
+    PUBLISH_ARTIFACT_ID = 'vanite-data'
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
+
+dependencies { configuration ->
+    addNetworkLibraries(configuration)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${rootProject.ext.PluginsVersions.KotlinPluginV}"
+
+    addRxJavaLibraries(configuration)
+    addCoroutinesLibraries(configuration)
+    addDefaultAppCompatDependencies(configuration)
+
+    if (!project.name.equals(":vanite")) {
+        implementation project(":vanite")
+    }
+}
+
+private void addNetworkLibraries(configuration) {
+    configuration.implementation("com.squareup.retrofit2:retrofit:${rootProject.ext.RetrofitV}")
+    configuration.implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
+    configuration.implementation("com.squareup.retrofit2:converter-gson:${rootProject.ext.RetrofitGsonV}")
+    configuration.implementation("com.squareup.retrofit2:adapter-rxjava2:${rootProject.ext.RetrofitRxJavaV}")
+}

@@ -1,0 +1,54 @@
+apply plugin: "${rootProject.ext.LibraryPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidPlugin}"
+apply plugin: "${rootProject.ext.KotlinAndroidExtPlugin}"
+
+android {
+    compileSdk rootProject.ext.ApplicationCompileV
+
+    defaultConfig {
+        namespace 'io.vanite.android.prefs'
+        minSdk rootProject.ext.MinSdkV
+        targetSdk rootProject.ext.ApplicationCompileV
+        versionCode rootProject.ext.LibraryVersionCode
+        versionName "${rootProject.ext.LibraryVersion}"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            debuggable false
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_10
+        targetCompatibility JavaVersion.VERSION_1_10
+    }
+
+    kotlinOptions {
+        jvmTarget = '10'
+    }
+}
+
+ext {
+    PUBLISH_ARTIFACT_ID = 'vanite-prefs'
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
+
+dependencies { configuration ->
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${rootProject.ext.PluginsVersions.KotlinPluginV}"
+
+    addRxJavaLibraries(configuration)
+    addCoroutinesLibraries(configuration)
+    addDefaultAppCompatDependencies(configuration)
+
+    if (!project.name.equals("vanite")) {
+        implementation project(":vanite")
+    }
+}
